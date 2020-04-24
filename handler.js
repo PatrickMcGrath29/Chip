@@ -1,10 +1,11 @@
 'use strict'
 
+const neo4j = require('neo4j-driver').v1
+
 const databaseEndpoint = process.env.DB_ENDPOINT
 const databaseUsername = process.env.DB_USER
 const databasePassword = process.env.DB_PASS
 
-const neo4j = require('neo4j-driver').v1
 const driver = neo4j.driver(
   databaseEndpoint,
   neo4j.auth.basic(databaseUsername, databasePassword)

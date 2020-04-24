@@ -24,9 +24,17 @@ package:
   exclude:
     - client/**
 
+layers:
+  commonLibs:
+    path: .
+    compatibleRuntimes:
+      - nodejs10.x
+
 functions:
   hello:
     handler: handler.hello
+    layers:
+      - { Ref: CommonLibsLambdaLayer }
     events:
       - http:
           path: hello
