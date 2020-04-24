@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "neo4j-driver": "^4.0.2",
+    "serverless-dotenv-plugin": "^2.4.2"
+  }
+}

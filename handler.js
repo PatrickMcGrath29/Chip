@@ -1,25 +1,63 @@
-"use strict";
-const { tagEvent } = require("./serverless_sdk");
+'use strict'
 
-module.exports.hello = async event => {
-  tagEvent("custom-tag", "hello world", { custom: { tag: "data" } });
+const databaseEndpoint = process.env.DB_ENDPOINT
+const databaseUsername = process.env.DB_USER
+const databasePassword = process.env.DB_PASS
 
+const neo4j = require('neo4j-driver').v1
+const driver = neo4j.driver(
+  databaseEndpoint,
+  neo4j.auth.basic(databaseUsername, databasePassword)
+)
+
+module.exports.hello = async (event) => {
+  const session = driver.session()
+
+  const networkId = event['networkId']
+  const linkId = event['linkId']
+
+  session
+    .run(
+      `MERGE ({networkId: ${networkId}})-[:SHARED_WITH]->({networkId: ${linkId}})`
+    )
+    .then((result) => {
+      session.close()
+      return successResponse()
+    })
+    .catch((err) => {
+      return invalidRequest()
+    })
+}
+
+const headers = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Credentials': true,
+}
+
+const successResponse = () => {
   return {
     statusCode: 200,
-    headers: {
-      "Access-Control-Allow-Origin": "*", // Required for CORS support to work
-      "Access-Control-Allow-Credentials": true // Required for cookies, authorization headers with HTTPS
-    },
+    headers: headers,
     body: JSON.stringify(
       {
-        message: "Go Serverless v1.0! Your function executed successfully!",
-        input: event
+        message: 'Successfully added',
       },
       null,
       2
-    )
-  };
+    ),
+  }
+}
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
-};
+const invalidRequest = () => {
+  return {
+    statusCode: 422,
+    headers: headers,
+    body: JSON.stringify(
+      {
+        message: 'Invalid Request',
+      },
+      null,
+      2
+    ),
+  }
+}
