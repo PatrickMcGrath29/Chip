@@ -1,6 +1,6 @@
 'use strict'
 
-const neo4j = require('neo4j-driver').v1
+const neo4j = require('neo4j-driver')
 
 const databaseEndpoint = process.env.DB_ENDPOINT
 const databaseUsername = process.env.DB_USER
@@ -12,20 +12,24 @@ const driver = neo4j.driver(
 )
 
 module.exports.hello = async (event) => {
+  const eventBody = JSON.parse(event['body'])
+  const networkId = eventBody['networkId']
+  const linkId = eventBody['linkId']
+
   const session = driver.session()
-
-  const networkId = event['networkId']
-  const linkId = event['linkId']
-
   session
     .run(
-      `MERGE ({networkId: ${networkId}})-[:SHARED_WITH]->({networkId: ${linkId}})`
+      'MERGE ({networkId: $networkId)-[:SHARED_WITH]->({networkId: $linkId)',
+      { networkId: networkId, linkId: linkId }
     )
     .then((result) => {
+      console.log(result)
       session.close()
       return successResponse()
     })
     .catch((err) => {
+      console.log(err)
+      session.close()
       return invalidRequest()
     })
 }
