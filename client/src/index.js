@@ -1,5 +1,7 @@
 import axios from "axios";
 
+const graphEndpoint =
+  "https://sch7bopnkk.execute-api.us-east-1.amazonaws.com/dev/links";
 const initialize = () => {
   let newUser = false;
 
@@ -21,9 +23,10 @@ const initialize = () => {
     updateGraph({
       networkId: localStorage.networkId,
       linkId: queryParams.get("lid"),
+      webpage: window.location.href,
     });
   } else if (newUser) {
-    updateGraph({
+    addUser({
       networkId: localStorage.networkId,
     });
   }
@@ -38,8 +41,12 @@ const updateUrl = (params) => {
   window.history.pushState({ urlPath: newPath }, "", newPath);
 };
 
-const updateGraph = (networkData) => {
-  console.log("req");
+const addUser = async (networkId) => {
+  console.log(networkId);
+};
+
+const updateGraph = async (networkData) => {
+  axios.post(graphEndpoint, networkData);
 };
 
 initialize();

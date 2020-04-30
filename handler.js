@@ -1,7 +1,7 @@
 'use strict'
 
-import axios from 'axios'
-import axiosRetry from 'axios-retry'
+const axios = require('axios')
+const axiosRetry = require('axios-retry')
 
 axiosRetry(axios, { retries: 3 })
 axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay })
