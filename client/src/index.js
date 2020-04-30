@@ -16,19 +16,25 @@ const initialize = () => {
 
   const queryParams = new URLSearchParams(window.location.search);
 
-  if (
-    queryParams.has("lid") &&
-    queryParams.get("lid") !== localStorage.networkId
-  ) {
-    updateGraph({
-      networkId: localStorage.networkId,
-      linkId: queryParams.get("lid"),
-      webpage: window.location.href,
-    });
-  } else if (newUser) {
-    addUser({
-      networkId: localStorage.networkId,
-    });
+  if (queryParams.has("lid")) {
+    const lid = queryParams.get("lid");
+    queryParams.delete("lid");
+
+    if (lid !== localStorage.networkId) {
+      let cleanUrl = `${window.location.origin}/${window.location.pathname}`;
+      cleanUrl +=
+        queryParams.toString() == "" ? "" : `?${queryParams.toString()}`;
+
+      updateGraph({
+        networkId: localStorage.networkId,
+        linkId: lid,
+        webpage: cleanUrl,
+      });
+    } else if (newUser) {
+      addUser({
+        networkId: localStorage.networkId,
+      });
+    }
   }
 
   // Generate network query parameter
