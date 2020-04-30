@@ -1,65 +1,56 @@
 'use strict'
 
-const neo4j = require('neo4j-driver')
+const axios = require('axios')
 
 const databaseEndpoint = process.env.DB_ENDPOINT
 const databaseUsername = process.env.DB_USER
 const databasePassword = process.env.DB_PASS
 
-const driver = neo4j.driver(
-  databaseEndpoint,
-  neo4j.auth.basic(databaseUsername, databasePassword)
-)
-
 module.exports.hello = async (event) => {
   const eventBody = JSON.parse(event['body'])
   const networkId = eventBody['networkId']
   const linkId = eventBody['linkId']
+  const webpage = eventBody['webpage']
 
-  const session = driver.session()
-  session
-    .run(
-      'MERGE ({networkId: $networkId)-[:SHARED_WITH]->({networkId: $linkId)',
-      { networkId: networkId, linkId: linkId }
-    )
-    .then((result) => {
-      console.log(result)
-      session.close()
-      return successResponse()
+  const body = {
+    query:
+      'MERGE (a:User {networkId: {networkId}}) MERGE(b:User {networkId: {linkId}}) MERGE ((a)-[:SHARED_WITH { webpage: {webpage}}]->(b))',
+    params: {
+      networkId: networkId,
+      linkId: linkId,
+      webpage: webpage,
+    },
+  }
+
+  let response = await axios
+    .post(databaseEndpoint, body, {
+      auth: {
+        username: databaseUsername,
+        password: databasePassword,
+      },
+    })
+    .then((res) => {
+      return { code: 200, status: 'OK' }
     })
     .catch((err) => {
       console.log(err)
-      session.close()
-      return invalidRequest()
+      return { code: 400, status: 'ERROR' }
     })
+
+  return formatResponse(response)
 }
 
 const headers = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Credentials': true,
 }
-
-const successResponse = () => {
+const formatResponse = (response) => {
   return {
-    statusCode: 200,
+    statusCode: response.code,
     headers: headers,
     body: JSON.stringify(
       {
-        message: 'Successfully added',
-      },
-      null,
-      2
-    ),
-  }
-}
-
-const invalidRequest = () => {
-  return {
-    statusCode: 422,
-    headers: headers,
-    body: JSON.stringify(
-      {
-        message: 'Invalid Request',
+        status: response.status,
       },
       null,
       2

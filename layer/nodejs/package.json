@@ -1,5 +1,7 @@
 {
   "devDependencies": {
+    "axios": "^0.19.2",
     "neo4j-driver": "^4.0.2"
-  }
+  },
+  "dependencies": {}
 }
