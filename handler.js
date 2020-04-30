@@ -48,6 +48,7 @@ const headers = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Credentials': true,
 }
+
 const formatResponse = (response) => {
   return {
     statusCode: response.code,
