@@ -1,12 +1,16 @@
 'use strict'
 
-const axios = require('axios')
+import axios from 'axios'
+import axiosRetry from 'axios-retry'
+
+axiosRetry(axios, { retries: 3 })
+axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay })
 
 const databaseEndpoint = process.env.DB_ENDPOINT
 const databaseUsername = process.env.DB_USER
 const databasePassword = process.env.DB_PASS
 
-module.exports.hello = async (event) => {
+module.exports.insertRecord = async (event) => {
   const eventBody = JSON.parse(event['body'])
   const networkId = eventBody['networkId']
   const linkId = eventBody['linkId']

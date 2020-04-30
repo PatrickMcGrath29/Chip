@@ -1,6 +1,7 @@
 {
   "devDependencies": {
     "axios": "^0.19.2",
+    "axios-retry": "^3.1.8",
     "neo4j-driver": "^4.0.2"
   },
   "dependencies": {}

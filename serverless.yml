@@ -31,13 +31,13 @@ layers:
       - nodejs10.x
 
 functions:
-  hello:
-    handler: handler.hello
+  insertRecord:
+    handler: handler.insertRecord
     layers:
       - { Ref: CommonLibsLambdaLayer }
     events:
       - http:
-          path: hello
+          path: links
           method: post
           cors: true
 #    Define function environment variables here
