@@ -3,18 +3,21 @@
 const axios = require('axios')
 const axiosRetry = require('axios-retry')
 
-axiosRetry(axios, { retries: 3 })
+axiosRetry(axios, { retries: 5 })
 axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay })
 
 const databaseEndpoint = process.env.DB_ENDPOINT
 const databaseUsername = process.env.DB_USER
 const databasePassword = process.env.DB_PASS
 
-module.exports.insertRecord = async (event) => {
+module.exports.addLink = async (event) => {
+  // Required Fields
   const eventBody = JSON.parse(event['body'])
   const networkId = eventBody['networkId']
   const linkId = eventBody['linkId']
   const webpage = eventBody['webpage']
+  // Optional Fields
+  const ipAddress = event['requestContext']['identity']['sourceIp']
 
   const body = {
     query:
@@ -26,7 +29,7 @@ module.exports.insertRecord = async (event) => {
     },
   }
 
-  let response = await axios
+  const response = await axios
     .post(databaseEndpoint, body, {
       auth: {
         username: databaseUsername,
@@ -44,12 +47,12 @@ module.exports.insertRecord = async (event) => {
   return formatResponse(response)
 }
 
-const headers = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Credentials': true,
-}
-
 const formatResponse = (response) => {
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Credentials': true,
+  }
+
   return {
     statusCode: response.code,
     headers: headers,

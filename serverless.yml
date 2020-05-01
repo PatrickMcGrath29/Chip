@@ -31,8 +31,9 @@ layers:
       - nodejs10.x
 
 functions:
-  insertRecord:
-    handler: handler.insertRecord
+  addLink:
+    timeout: 10
+    handler: handler.addLink
     layers:
       - { Ref: CommonLibsLambdaLayer }
     events:
