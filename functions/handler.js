@@ -16,15 +16,13 @@ module.exports.addLink = async (event) => {
   // Optional Fields
   const ipAddress = event['requestContext']['identity']['sourceIp']
 
+  if (!(networkId && linkId && webpage)) {
+    return formatResponse({ code: 400, status: 'INVALID INPUT' })
+  }
+
   const response = await insertRecord(
     createRecord(networkId, linkId, webpage, ipAddress)
   )
-    .then(() => {
-      return { code: 200, status: 'OK' }
-    })
-    .catch(() => {
-      return { code: 400, status: 'ERROR' }
-    })
 
   return formatResponse(response)
 }
@@ -45,7 +43,15 @@ const insertRecord = async (record) => {
     TableName: process.env.RECORD_TABLE,
     Item: record,
   }
-  return dynamoDb.put(entry).promise()
+  return dynamoDb
+    .put(entry)
+    .promise()
+    .then(() => {
+      return { code: 200, status: 'OK' }
+    })
+    .catch(() => {
+      return { code: 500, status: 'ERROR SAVING DATA' }
+    })
 }
 
 const formatResponse = (response) => {
