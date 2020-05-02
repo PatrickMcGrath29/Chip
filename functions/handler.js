@@ -29,13 +29,14 @@ module.exports.addLink = async (event) => {
   return formatResponse(response)
 }
 
-const createRecord = (networkId, linkId, webpage) => {
+const createRecord = (networkId, linkId, webpage, ipAddress) => {
   const timestamp = new Date().getTime()
   return {
     id: uuid.v1(),
     networkId: networkId,
     linkId: linkId,
     webpage: webpage,
+    ipAddress: ipAddress,
   }
 }
 
