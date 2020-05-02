@@ -1,14 +1,11 @@
 'use strict'
 
-const axios = require('axios')
-const axiosRetry = require('axios-retry')
+const AWS = require('aws-sdk')
+const uuid = require('uuid')
 
-axiosRetry(axios, { retries: 5 })
-axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay })
+AWS.config.setPromisesDependency(require('bluebird'))
 
-const databaseEndpoint = process.env.DB_ENDPOINT
-const databaseUsername = process.env.DB_USER
-const databasePassword = process.env.DB_PASS
+const dynamoDb = new AWS.DynamoDB.DocumentClient()
 
 module.exports.addLink = async (event) => {
   // Required Fields
@@ -19,32 +16,35 @@ module.exports.addLink = async (event) => {
   // Optional Fields
   const ipAddress = event['requestContext']['identity']['sourceIp']
 
-  const body = {
-    query:
-      'MERGE (a:User {networkId: {networkId}}) MERGE(b:User {networkId: {linkId}}) MERGE ((a)-[:SHARED_WITH { webpage: {webpage}}]->(b))',
-    params: {
-      networkId: networkId,
-      linkId: linkId,
-      webpage: webpage,
-    },
-  }
-
-  const response = await axios
-    .post(databaseEndpoint, body, {
-      auth: {
-        username: databaseUsername,
-        password: databasePassword,
-      },
-    })
-    .then((res) => {
+  const response = await insertRecord(
+    createRecord(networkId, linkId, webpage, ipAddress)
+  )
+    .then(() => {
       return { code: 200, status: 'OK' }
     })
-    .catch((err) => {
-      console.log(err)
+    .catch(() => {
       return { code: 400, status: 'ERROR' }
     })
 
   return formatResponse(response)
+}
+
+const createRecord = (networkId, linkId, webpage) => {
+  const timestamp = new Date().getTime()
+  return {
+    id: uuid.v1(),
+    networkId: networkId,
+    linkId: linkId,
+    webpage: webpage,
+  }
+}
+
+const insertRecord = async (record) => {
+  const entry = {
+    TableName: process.env.CANDIDATE_TABLE,
+    Item: record,
+  }
+  return dynamoDb.put(entry).promise()
 }
 
 const formatResponse = (response) => {

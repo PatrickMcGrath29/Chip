@@ -2,23 +2,39 @@ service: social-network-analysis-graph
 app: social-network-analysis
 org: patrickmcgrath29
 
-plugins:
-  - serverless-dotenv-plugin
-
 provider:
   name: aws
   runtime: nodejs10.x
+  region: us-east-1
+  environment:
+    CANDIDATE_TABLE: social-network-analysis
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: '*'
 
-outputs:
-  custom-output: any-value-here
-
-# you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
-
-# you can define service wide environment variables here
-#  environment:
-#    variable1: value1
+resources:
+  Resources:
+    CandidatesDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: 'id'
+            AttributeType: 'S'
+        KeySchema:
+          - AttributeName: 'id'
+            KeyType: 'HASH'
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: 'NEW_AND_OLD_IMAGES'
+        TableName: ${self:provider.environment.CANDIDATE_TABLE}
 
 package:
   exclude:

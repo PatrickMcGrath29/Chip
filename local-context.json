@@ -1,5 +1,5 @@
 {
-  "body": "{\"networkId\": \"a231\",\"linkId\": \"41222\",\"webpage\": \"https://www.google.com?abcdefg\"}",
+  "body": "{\"networkId\": \"22\",\"linkId\": \"11\",\"webpage\": \"https://www.google.com?abcdefg\"}",
   "resource": "/{proxy+}",
   "path": "/path/to/resource",
   "httpMethod": "POST",
