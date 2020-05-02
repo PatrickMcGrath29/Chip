@@ -41,7 +41,7 @@ const createRecord = (networkId, linkId, webpage) => {
 
 const insertRecord = async (record) => {
   const entry = {
-    TableName: process.env.CANDIDATE_TABLE,
+    TableName: process.env.RECORD_TABLE,
     Item: record,
   }
   return dynamoDb.put(entry).promise()

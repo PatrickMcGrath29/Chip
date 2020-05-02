@@ -7,7 +7,7 @@ provider:
   runtime: nodejs10.x
   region: us-east-1
   environment:
-    CANDIDATE_TABLE: social-network-analysis
+    RECORD_TABLE: social-network-analysis
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -34,7 +34,7 @@ resources:
           WriteCapacityUnits: 1
         StreamSpecification:
           StreamViewType: 'NEW_AND_OLD_IMAGES'
-        TableName: ${self:provider.environment.CANDIDATE_TABLE}
+        TableName: ${self:provider.environment.RECORD_TABLE}
 
 package:
   exclude:
