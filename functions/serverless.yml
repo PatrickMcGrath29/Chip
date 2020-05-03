@@ -48,8 +48,7 @@ layers:
 
 functions:
   addLink:
-    timeout: 10
-    handler: handler.addLink
+    handler: src/handler.addLink
     layers:
       - { Ref: CommonLibsLambdaLayer }
     events:
