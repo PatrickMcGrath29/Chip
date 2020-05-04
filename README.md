@@ -8,7 +8,7 @@ with one website.
 
 A graph of the typical model might look something like this:
 
-<img src="traditional-model.png" alt="Traditional Model" width="400px">
+<img src="traditional-model.png" alt="Traditional Model" width="500px">
 
 These systems undoubtedly provide valuable information, but they fail to
 represent how content is shared and connected between end users.
@@ -25,7 +25,7 @@ connected graphs for your user base.
 
 A graph of the connected model might look something like this:
 
-<img src="connected-model.png" alt="connected Model" width="400px">
+<img src="connected-model.png" alt="connected Model" width="500px">
 
 Based off this model we can assume that User 1 is well connected and that people in
 User 1's network are inclined to show interest in the things that User 1 shares. User
